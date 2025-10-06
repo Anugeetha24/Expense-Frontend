@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import auth from '../services/auth'
 
 export default function Login(){
@@ -15,31 +17,37 @@ export default function Login(){
     setError(null)
     setLoading(true)
     try {
-      await auth.login(form.username, form.password)
-      navigate('/profile')
+      const response = await auth.login(form.username, form.password)
+      toast.success(response.message || 'Login successful!')
+      navigate('/')
     } catch (err) {
-      setError(err.message || 'Login failed')
+      const errorMessage = err.message || 'Login failed'
+      toast.error(errorMessage)
+      setError(errorMessage)
     } finally { setLoading(false) }
   }
 
   return (
-    <div className="card">
-      <h2>Login</h2>
-      <form className="form" onSubmit={onSubmit}>
-        <div>
-          <label>Username</label>
-          <input name="username" value={form.username} onChange={onChange} required />
-        </div>
-        <div>
-          <label>Password</label>
-          <input type="password" name="password" value={form.password} onChange={onChange} required />
-        </div>
-        {error && <div style={{color:'#ffb4b4'}}>{error}</div>}
-        <div style={{display:'flex',gap:8}}>
-          <button type="submit" disabled={loading}>{loading? 'Signing in...' : 'Sign in'}</button>
-          <button type="button" onClick={() => navigate('/register')}>Register</button>
-        </div>
-      </form>
-    </div>
+    <>
+      <div className="card">
+        <h2>Login</h2>
+        <form className="form" onSubmit={onSubmit}>
+          <div>
+            <label>Username</label>
+            <input name="username" value={form.username} onChange={onChange} required />
+          </div>
+          <div>
+            <label>Password</label>
+            <input type="password" name="password" value={form.password} onChange={onChange} required />
+          </div>
+          {error && <div style={{color:'#ffb4b4'}}>{error}</div>}
+          <div style={{display:'flex',gap:8}}>
+            <button type="submit" disabled={loading}>{loading? 'Signing in...' : 'Sign in'}</button>
+            <button type="button" onClick={() => navigate('/register')}>Register</button>
+          </div>
+        </form>
+      </div>
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
   )
 }

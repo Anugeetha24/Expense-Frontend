@@ -1,17 +1,18 @@
 // Lightweight authentication service that uses fetch and localStorage.
 const API_BASE = 'http://localhost:8080/api'
 
-async function register(username, email, password, role = 'USER') {
+async function register(username, email, password, role = 'user') {
   const res = await fetch(`${API_BASE}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, email, password, role })
+    body: JSON.stringify({ username, password, emailId: email, role })
   })
   if (!res.ok) {
     const err = await res.text()
     throw new Error(err || 'Registration failed')
   }
-  return res.json()
+  const responseText = await res.text()
+  return { message: responseText }
 }
 
 async function login(username, password) {
@@ -20,14 +21,22 @@ async function login(username, password) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password })
   })
+  const responseText = await res.text();
+  
   if (!res.ok) {
-    const err = await res.text()
-    throw new Error(err || 'Login failed')
+    throw new Error(responseText || 'Login failed')
   }
-  const data = await res.json()
-  // expecting { token: '...', user: { id, username, email, roles: [...] } }
-  if (data && data.token) {
-    localStorage.setItem('user', JSON.stringify(data.user || null))
+
+  // Try to parse as JSON if possible, otherwise use text response
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    data = { message: responseText };
+  }
+
+  if (data.token) {
+    localStorage.setItem('user', JSON.stringify(data.user || { username }))
     localStorage.setItem('token', data.token)
   }
   return data
