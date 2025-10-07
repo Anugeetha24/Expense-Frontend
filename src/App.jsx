@@ -5,6 +5,7 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Profile from './components/Profile'
 import AdminPanel from './components/AdminPanel'
+import Dashboard from './components/Dashboard'
 import PrivateRoute from './PrivateRoute'
 
 function Welcome() {
@@ -376,7 +377,8 @@ export default function App() {
       </nav>
 
       <Routes>
-        <Route path="/" element={<Welcome />} />
+        <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
