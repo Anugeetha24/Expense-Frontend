@@ -1,5 +1,5 @@
 import React from 'react';
-import { Line } from 'react-chartjs-2';
+import { Line, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -8,7 +8,8 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement
 } from 'chart.js';
 import './Dashboard.css';
 
@@ -20,7 +21,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement
 );
 
 export default function Dashboard() {
@@ -44,6 +46,30 @@ export default function Dashboard() {
     utilities: 600
   };
 
+  // Data for Doughnut chart
+  const categoryChartData = {
+    labels: ['Food', 'Transport', 'Entertainment', 'Utilities'],
+    datasets: [
+      {
+        label: 'Spending by Category',
+        data: [1200, 800, 400, 600],
+        backgroundColor: [
+          'rgba(76, 175, 80, 0.8)',
+          'rgba(33, 150, 243, 0.8)',
+          'rgba(255, 152, 0, 0.8)',
+          'rgba(156, 39, 176, 0.8)'
+        ],
+        borderColor: [
+          'rgba(76, 175, 80, 1)',
+          'rgba(33, 150, 243, 1)',
+          'rgba(255, 152, 0, 1)',
+          'rgba(156, 39, 176, 1)'
+        ],
+        borderWidth: 2
+      }
+    ]
+  };
+
   const incomeVsExpenses = {
     income: 5500,
     expenses: 3000
@@ -65,6 +91,7 @@ export default function Dashboard() {
       <div className="dashboard-grid">
         {/* Monthly Spending Chart */}
         <div className="card chart-card">
+          <h3>Monthly Spending Trend</h3>
           <Line
             data={monthlyData}
             options={{
@@ -75,6 +102,30 @@ export default function Dashboard() {
               },
               scales: {
                 y: { beginAtZero: true }
+              }
+            }}
+          />
+        </div>
+
+        {/* Category Spending Pie Chart */}
+        <div className="card chart-card">
+          <h3>Category Breakdown</h3>
+          <Doughnut
+            data={categoryChartData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: true,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    color: 'var(--text-primary, #333)',
+                    padding: 15,
+                    font: {
+                      size: 12
+                    }
+                  }
+                }
               }
             }}
           />
