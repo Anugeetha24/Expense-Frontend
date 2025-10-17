@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -11,6 +11,7 @@ import {
   Legend
 } from 'chart.js';
 import './Dashboard.css';
+import AddTransaction from './AddTransaction';
 
 // Register ChartJS components
 ChartJS.register(
@@ -24,6 +25,9 @@ ChartJS.register(
 );
 
 export default function Dashboard() {
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [transactions, setTransactions] = useState([]);
+
   // Sample data for the charts
   const monthlyData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -49,10 +53,25 @@ export default function Dashboard() {
     expenses: 3000
   };
 
+  const handleSaveTransaction = (transaction) => {
+    console.log('New transaction:', transaction);
+    setTransactions(prev => [...prev, transaction]);
+    setShowAddTransaction(false);
+    // Here you can add API call to save transaction to backend
+  };
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h2>Spending</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2>Spending</h2>
+          <button 
+            className="add-transaction-btn"
+            onClick={() => setShowAddTransaction(true)}
+          >
+            + Add Transaction
+          </button>
+        </div>
         <div className="monthly-total">
           <div>
             <h3>Monthly Spending</h3>
@@ -123,6 +142,13 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {showAddTransaction && (
+        <AddTransaction 
+          onClose={() => setShowAddTransaction(false)}
+          onSave={handleSaveTransaction}
+        />
+      )}
     </div>
   );
 }
